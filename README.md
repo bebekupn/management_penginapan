@@ -1,305 +1,653 @@
 # 🏨 Hotel Room Management System
 
-**Hotel Room Management System** adalah aplikasi berbasis **Command-Line Interface (CLI)** yang dikembangkan menggunakan **C++** untuk mengelola reservasi kamar, proses check-in dan check-out, serta riwayat transaksi pelanggan.
+![C++](https://img.shields.io/badge/Language-C%2B%2B-blue.svg)
+![Standard](https://img.shields.io/badge/Standard-C%2B%2B11-blue.svg)
+![Data Structure](https://img.shields.io/badge/Data%20Structure-Doubly%20Linked%20List-orange.svg)
+![Status](https://img.shields.io/badge/Status-Completed-brightgreen.svg)
 
-Proyek ini mengimplementasikan struktur data **Doubly Linked List** dengan mekanisme **Sorted Insertion** berdasarkan **Unique Transaction Code**. Status ketersediaan kamar dikelola secara terpisah menggunakan array sehingga proses reservasi dan pengelolaan riwayat transaksi dapat dilakukan secara terstruktur.
+**Hotel Room Management System** adalah aplikasi berbasis **Command-Line Interface (CLI)** yang dibuat menggunakan **C++** untuk mensimulasikan pengelolaan kamar hotel dan data transaksi pelanggan.
+
+Program ini menggunakan struktur data **Doubly Linked List** untuk menyimpan data pemesanan serta array untuk mengelola status ketersediaan lima kamar hotel.
+
+Data transaksi dimasukkan ke dalam linked list menggunakan metode **Sorted Insertion** berdasarkan **Kode Unik** secara ascending.
 
 ---
 
 ## 📌 Overview
 
-Sistem ini dirancang untuk mensimulasikan proses dasar manajemen kamar hotel, meliputi:
+Sistem ini menyediakan beberapa fungsi utama untuk pengelolaan kamar dan transaksi hotel:
 
-* Pemeriksaan ketersediaan kamar.
-* Proses reservasi dan check-in pelanggan.
-* Pembuatan kode transaksi secara otomatis.
-* Penyimpanan transaksi menggunakan **Doubly Linked List**.
-* Pengurutan transaksi berdasarkan kode unik.
-* Proses check-out dan pembaruan status kamar.
-* Penyajian laporan riwayat transaksi.
-* Penghapusan data transaksi tertentu.
-* Manajemen memori menggunakan dynamic allocation dan deallocation.
+* Melihat status ketersediaan kamar.
+* Melakukan pemesanan kamar.
+* Melakukan proses check-out.
+* Membuat kode unik transaksi secara otomatis.
+* Menyimpan data pemesanan menggunakan Doubly Linked List.
+* Menampilkan seluruh data transaksi.
+* Mencari transaksi berdasarkan kode unik.
+* Menghapus data transaksi.
+* Mengelola memori secara dinamis menggunakan `new` dan `delete`.
 
-Proyek ini dibuat sebagai implementasi praktis konsep **struktur data, pointer, linked list, dynamic memory allocation, dan algoritma insertion** dalam C++.
+Program menyediakan **5 kamar hotel**, dengan status kamar yang dikelola menggunakan array:
+
+```cpp
+int kamar_kosong[5];
+```
+
+Nilai status kamar:
+
+```text
+0 = KOSONG
+1 = TERISI
+```
 
 ---
 
 ## ✨ Features
 
-### 1. 🛎️ Check-In & Room Reservation
+### 1. 🛏️ Pemesanan Kamar
 
-Sistem menyediakan proses pemesanan kamar dengan beberapa validasi:
+Menu **Pemesanan Kamar** digunakan untuk melakukan reservasi kamar.
 
-* Menampilkan daftar kamar yang tersedia.
-* Memvalidasi nomor kamar.
-* Mencegah pemesanan kamar yang sedang digunakan.
-* Mencatat data pelanggan dan lama menginap.
-* Menghasilkan **Unique Transaction Code** secara otomatis.
-* Memasukkan transaksi ke dalam linked list secara terurut.
-
-Kode transaksi menggunakan formula:
-
-```text
-(ID_Pelanggan × 100) + (Lama_Inap × 10) + No_Kamar
-```
+Sebelum melakukan pemesanan, program akan menampilkan status seluruh kamar.
 
 Contoh:
 
 ```text
-ID Pelanggan : 12
-Lama Inap    : 3 hari
-No. Kamar    : 5
-
-Kode Transaksi:
-(12 × 100) + (3 × 10) + 5
-= 1235
+===== STATUS KAMAR HOTEL =====
+Kamar 1 : [ KOSONG ]
+Kamar 2 : [ TERISI ]
+Kamar 3 : [ KOSONG ]
+Kamar 4 : [ KOSONG ]
+Kamar 5 : [ TERISI ]
+------------------------------
 ```
 
----
+Sistem melakukan validasi terhadap:
 
-### 2. 🚪 Check-Out
+* Nomor kamar harus berada pada rentang **1–5**.
+* Kamar tidak boleh sedang terisi.
+* Data pelanggan harus dimasukkan sebelum transaksi dibuat.
 
-Proses check-out digunakan untuk menyelesaikan masa inap pelanggan.
-
-Ketika pelanggan melakukan check-out:
-
-* Status kamar dikembalikan menjadi **tersedia**.
-* Data transaksi tetap tersimpan dalam **historical record**.
-* Riwayat pelanggan tidak langsung dihapus dari linked list.
-* Kamar dapat digunakan kembali untuk reservasi berikutnya.
-
-Pendekatan ini memisahkan antara **status kamar** dan **riwayat transaksi**.
-
----
-
-### 3. 📊 Transaction History
-
-Sistem menyediakan laporan seluruh transaksi yang tersimpan.
-
-Informasi yang ditampilkan meliputi:
-
-| Data             | Keterangan          |
-| ---------------- | ------------------- |
-| Transaction Code | Kode unik transaksi |
-| Customer Name    | Nama pelanggan      |
-| Stay Duration    | Lama menginap       |
-| Room Number      | Nomor kamar         |
-
-Data transaksi ditampilkan berdasarkan urutan **ascending Transaction Code**.
-
-Contoh:
+Setelah pemesanan berhasil, status kamar akan berubah menjadi:
 
 ```text
-========================================================
-                 TRANSACTION HISTORY
-========================================================
-Code       Customer Name        Stay       Room
---------------------------------------------------------
-1023       Budi                 2 Days     3
-1245       Andi                 4 Days     5
-1512       Rizky                1 Day      2
-========================================================
+0 → KOSONG
+1 → TERISI
 ```
 
 ---
 
-### 4. 🗑️ Delete Transaction Record
+## 🔑 Kode Unik Transaksi
 
-Sistem memungkinkan administrator menghapus transaksi tertentu berdasarkan **Transaction Code**.
+Setiap transaksi mendapatkan **kode unik** yang dibuat berdasarkan:
 
-Fitur ini dilengkapi dengan validasi:
+* ID pelanggan
+* Lama menginap
+* Nomor kamar
 
-* Menolak penghapusan jika linked list kosong.
-* Memberikan pesan apabila kode transaksi tidak ditemukan.
-* Menangani penghapusan pada node:
+Formula yang digunakan:
 
-  * `head`
-  * `tail`
-  * node di tengah linked list.
-* Membebaskan memori menggunakan `delete`.
+```text
+Kode Unik = (ID Pelanggan × 100)
+          + (Lama Inap × 10)
+          + Nomor Kamar
+```
+
+ID pelanggan dibuat berdasarkan urutan pelanggan yang melakukan pemesanan.
+
+### Contoh
+
+Jika:
+
+```text
+ID Pelanggan = 7
+Lama Inap    = 4 hari
+Nomor Kamar  = 3
+```
+
+Maka:
+
+```text
+(7 × 100) + (4 × 10) + 3
+
+= 700 + 40 + 3
+
+= 743
+```
+
+Sehingga kode transaksi pelanggan adalah:
+
+```text
+743
+```
+
+Kode tersebut kemudian digunakan sebagai identifier untuk mencari dan menghapus data transaksi.
 
 ---
 
-## 🧱 Data Structure
+## 2. 🚪 Check-Out Kamar
 
-Proyek ini menggunakan **Doubly Linked List** sebagai struktur utama untuk menyimpan data transaksi.
+Menu **Check-Out Kamar** digunakan untuk mengubah status kamar yang sebelumnya terisi menjadi kosong.
 
-Setiap node memiliki dua pointer:
+Pengguna memasukkan:
+
+```text
+Kode Unik
+```
+
+Program kemudian melakukan pencarian transaksi menggunakan fungsi:
 
 ```cpp
-Node* prev;
-Node* next;
+cari_kamar()
 ```
 
-Struktur sederhananya:
+Jika data ditemukan, program menampilkan detail pemesanan:
+
+```text
+--- Detail Pemesanan ---
+Kode Unik   : 743
+Nama        : Aditya
+Lama Inap   : 4 hari
+Nomor Kamar : 3
+```
+
+Kemudian status kamar dikembalikan menjadi kosong:
+
+```cpp
+kamar_kosong[hasil->kmr.no_kamar - 1] = 0;
+```
+
+### Catatan
+
+**Check-out tidak menghapus node dari Doubly Linked List.**
+
+Data transaksi tetap berada di dalam linked list sehingga masih dapat ditampilkan melalui menu **Cetak Laporan**.
+
+Dengan demikian, program membedakan:
+
+```text
+Status Kamar
+      │
+      ├── KOSONG
+      └── TERISI
+
+Data Transaksi
+      │
+      └── Tetap tersimpan di Linked List
+```
+
+---
+
+## 3. 📊 Cetak Laporan
+
+Menu **Cetak Laporan** digunakan untuk menampilkan seluruh transaksi yang tersimpan di dalam Doubly Linked List.
+
+Data yang ditampilkan:
+
+| Informasi   | Keterangan           |
+| ----------- | -------------------- |
+| Kode Unik   | Identifier transaksi |
+| Nama        | Nama pelanggan       |
+| Lama Inap   | Durasi menginap      |
+| Nomor Kamar | Kamar yang digunakan |
+
+Contoh:
+
+```text
+=====cetak laporan=====
+no .1
+kode unik : 324
+nama : Budi
+lama inap : 2
+nomor kamar : 4
+
+no .2
+kode unik : 743
+nama : Aditya
+lama inap : 4
+nomor kamar : 3
+```
+
+Data ditampilkan dari `head` menuju `tail`.
+
+Karena transaksi menggunakan **Sorted Insertion**, data pada linked list disusun berdasarkan kode unik secara ascending.
+
+Contoh:
+
+```text
+324 ⇄ 512 ⇄ 743 ⇄ 915
+```
+
+---
+
+## 4. 🗑️ Hapus Data Transaksi
+
+Menu **Hapus Data** digunakan untuk menghapus transaksi berdasarkan kode unik.
+
+Pengguna memasukkan:
+
+```text
+Masukkan kode unik kamar:
+```
+
+Program akan mencari node yang memiliki kode tersebut.
+
+Jika ditemukan, node akan dilepaskan dari linked list dan memorinya dibebaskan menggunakan:
+
+```cpp
+delete(del);
+```
+
+Program menangani beberapa kondisi penghapusan:
+
+* Menghapus `head`.
+* Menghapus `tail`.
+* Menghapus node di tengah.
+* Menghapus satu-satunya node dalam list.
+* Kode transaksi tidak ditemukan.
+* Linked list masih kosong.
+
+Setelah data dihapus, kamar terkait juga dikembalikan menjadi kosong.
+
+---
+
+# 🧱 Data Structure
+
+Struktur data utama yang digunakan adalah **Doubly Linked List**.
+
+### Struktur `kamar`
+
+```cpp
+struct kamar {
+
+    int kode_unik;
+    string nama;
+    int lama_inap;
+    int no_kamar;
+
+};
+```
+
+Struktur tersebut menyimpan informasi setiap transaksi pelanggan.
+
+### Struktur `Node`
+
+```cpp
+struct Node {
+
+    kamar kmr;
+
+    Node* next;
+    Node* prev;
+
+};
+```
+
+Setiap node memiliki:
+
+* `kamar kmr` → menyimpan data transaksi.
+* `next` → menunjuk ke node berikutnya.
+* `prev` → menunjuk ke node sebelumnya.
+
+Ilustrasi:
 
 ```text
 NULL
-  ↓
-┌──────────┐      ┌──────────┐      ┌──────────┐
-│  Node 1  │ ⇄    │  Node 2  │ ⇄    │  Node 3  │
-└──────────┘      └──────────┘      └──────────┘
-      ↑                                   ↓
-    HEAD                                TAIL
+  ↑
+  │
+HEAD
+  │
+  ▼
+┌─────────────┐
+│ Transaction │
+│    Node     │
+└─────────────┘
+   │       │
+ prev     next
+   │       │
+   ▼       ▼
+ NULL   ┌─────────────┐
+        │ Transaction │
+        │    Node     │
+        └─────────────┘
+               │
+              next
+               ▼
+              ...
+               │
+               ▼
+              TAIL
 ```
 
-Setiap node menyimpan objek `Lagu` pada contoh struktur sebelumnya; dalam proyek hotel, data tersebut disesuaikan menjadi data transaksi kamar.
+---
 
-Contoh struktur:
+# 🔄 Sorted Insertion
+
+Program menggunakan fungsi:
 
 ```cpp
-struct Transaksi {
-    int kode_transaksi;
-    string nama_pelanggan;
-    int lama_inap;
-    int no_kamar;
-};
-
-struct Node {
-    Transaksi data;
-    Node* prev;
-    Node* next;
-};
+bool insertSorted(Node*& head, Node*& tail, const kamar& data)
 ```
 
----
+Fungsi tersebut memasukkan transaksi berdasarkan `kode_unik`.
 
-## ⚙️ Algorithm & Implementation
+Terdapat empat kondisi utama:
 
-| Component              | Implementation         |
-| ---------------------- | ---------------------- |
-| Primary Data Structure | Doubly Linked List     |
-| Node Connection        | `prev` & `next`        |
-| List Management        | `head` & `tail`        |
-| Insertion              | Sorted Insertion       |
-| Sorting Order          | Ascending              |
-| Room Management        | Fixed Array            |
-| Memory Allocation      | `new`                  |
-| Memory Deallocation    | `delete`               |
-| Memory Cleanup         | `clear()`              |
-| Interface              | Command-Line Interface |
-| Language Standard      | C++11                  |
+### 1. Linked List Kosong
 
-### Sorted Insertion
+Jika:
 
-Setiap transaksi baru tidak langsung ditempatkan di akhir list.
+```cpp
+head == nullptr
+```
 
-Sistem akan mencari posisi yang sesuai berdasarkan **Transaction Code**, kemudian memasukkan node pada posisi tersebut.
-
-Contoh:
+node baru menjadi:
 
 ```text
-Sebelum:
-1001 ⇄ 1205 ⇄ 1502
-
-Insert:
-1300
-
-Setelah:
-1001 ⇄ 1205 ⇄ 1300 ⇄ 1502
+head = new_node
+tail = new_node
 ```
 
-Dengan pendekatan tersebut, data selalu berada dalam kondisi terurut tanpa memerlukan proses sorting ulang terhadap seluruh list setelah setiap insertion.
-
 ---
 
-## ⏱️ Complexity Analysis
+### 2. Insert di Awal
 
-| Operation               | Time Complexity |
-| ----------------------- | --------------: |
-| Check Room Availability |            O(1) |
-| Insert at Head          |            O(1) |
-| Insert at Tail          |            O(1) |
-| Sorted Insertion        |            O(N) |
-| Search Transaction      |            O(N) |
-| Delete Transaction      |            O(N) |
-| Display History         |            O(N) |
-| Clear Linked List       |            O(N) |
+Jika kode transaksi lebih kecil daripada kode pada `head`:
 
-> **N** merupakan jumlah transaksi yang tersimpan di dalam linked list.
+```cpp
+data.kode_unik < head->kmr.kode_unik
+```
 
----
-
-## 🗂️ Project Structure
-
-Struktur repositori dapat dibuat seperti berikut:
+Node baru ditempatkan sebelum `head`.
 
 ```text
-hotel-room-management/
-│
-├── src/
-│   └── main.cpp
-│
-├── README.md
-├── LICENSE
-└── .gitignore
-```
+Before:
 
-Untuk proyek yang lebih besar, struktur dapat dikembangkan menjadi:
+100 ⇄ 300 ⇄ 500
 
-```text
-hotel-room-management/
-│
-├── include/
-│   ├── hotel.hpp
-│   ├── linked_list.hpp
-│   └── transaction.hpp
-│
-├── src/
-│   ├── hotel.cpp
-│   ├── linked_list.cpp
-│   ├── transaction.cpp
-│   └── main.cpp
-│
-├── README.md
-├── LICENSE
-└── .gitignore
+Insert 50:
+
+50 ⇄ 100 ⇄ 300 ⇄ 500
 ```
 
 ---
 
-## 🚀 Getting Started
+### 3. Insert di Akhir
 
-### Prerequisites
+Jika kode transaksi lebih besar daripada kode pada `tail`:
 
-Pastikan perangkat telah memiliki compiler C++ yang mendukung minimal **C++11**, seperti:
+```cpp
+data.kode_unik > tail->kmr.kode_unik
+```
 
-* GCC / MinGW
+Node baru ditempatkan setelah `tail`.
+
+```text
+Before:
+
+100 ⇄ 300 ⇄ 500
+
+Insert 700:
+
+100 ⇄ 300 ⇄ 500 ⇄ 700
+```
+
+---
+
+### 4. Insert di Tengah
+
+Jika kode transaksi berada di antara dua node:
+
+```text
+Before:
+
+100 ⇄ 300 ⇄ 500
+
+Insert 400:
+
+100 ⇄ 300 ⇄ 400 ⇄ 500
+```
+
+Program mengatur kembali hubungan:
+
+```cpp
+new_node->next
+new_node->prev
+current->next->prev
+current->next
+```
+
+sehingga struktur Doubly Linked List tetap terhubung dengan benar.
+
+---
+
+# 🔍 Searching
+
+Pencarian transaksi dilakukan menggunakan fungsi:
+
+```cpp
+Node* cari_kamar(Node* head, const int& target)
+```
+
+Fungsi melakukan traversal dari `head` menuju node berikutnya sampai:
+
+1. Kode unik ditemukan, atau
+2. Mencapai akhir linked list.
+
+Kompleksitas pencarian:
+
+```text
+O(N)
+```
+
+---
+
+# 🗑️ Deletion
+
+Penghapusan dilakukan menggunakan fungsi:
+
+```cpp
+bool hapus_data(Node*& head, Node*& tail, const int& target)
+```
+
+Fungsi ini melakukan pencarian node terlebih dahulu, kemudian memperbarui pointer `prev` dan `next`.
+
+Contoh penghapusan node tengah:
+
+```text
+Before:
+
+A ⇄ B ⇄ C
+
+Delete B:
+
+A ⇄ C
+```
+
+Pointer diperbarui menjadi:
+
+```cpp
+A->next = C;
+C->prev = A;
+```
+
+Node `B` kemudian dibebaskan:
+
+```cpp
+delete B;
+```
+
+---
+
+# 🧹 Memory Management
+
+Program menggunakan **dynamic memory allocation** untuk membuat node:
+
+```cpp
+new Node{data, nullptr, nullptr};
+```
+
+Setiap node yang dibuat harus dibebaskan menggunakan:
+
+```cpp
+delete;
+```
+
+Program menyediakan fungsi:
+
+```cpp
+void clear(Node*& head, Node*& tail)
+```
+
+untuk menghapus seluruh node ketika program akan ditutup.
+
+Prosesnya:
+
+```text
+HEAD
+ ↓
+Node 1 → Node 2 → Node 3 → NULL
+ ↓
+delete Node 1
+ ↓
+delete Node 2
+ ↓
+delete Node 3
+ ↓
+HEAD = NULL
+TAIL = NULL
+```
+
+Hal ini digunakan untuk mencegah **memory leak** ketika program selesai dijalankan.
+
+---
+
+# 📊 Complexity Analysis
+
+| Operation                | Complexity |
+| ------------------------ | ---------: |
+| Menampilkan status kamar |       O(1) |
+| Check ketersediaan kamar |       O(1) |
+| Insert Sorted            |       O(N) |
+| Search Transaction       |       O(N) |
+| Delete Transaction       |       O(N) |
+| Display Transaction      |       O(N) |
+| Clear Linked List        |       O(N) |
+
+Dengan jumlah kamar yang tetap sebanyak **5 kamar**, pengecekan status kamar dapat dianggap **O(1)** terhadap ukuran linked list transaksi.
+
+---
+
+# 🗂️ Program Structure
+
+Secara konseptual, program terdiri dari beberapa komponen:
+
+```text
+Hotel Room Management System
+│
+├── Room Management
+│   ├── kamar_kosong[5]
+│   └── tampilkan_kamar_kosong()
+│
+├── Transaction Data
+│   └── struct kamar
+│
+├── Doubly Linked List
+│   ├── struct Node
+│   ├── head
+│   └── tail
+│
+├── Transaction Operations
+│   ├── insertSorted()
+│   ├── cari_kamar()
+│   ├── hapus_data()
+│   └── data_kamar()
+│
+└── Memory Management
+    └── clear()
+```
+
+---
+
+# 🖥️ Main Menu
+
+Program menyediakan menu utama:
+
+```text
+1. pesan kamar
+2. checkout kamar
+3. cetak laporan
+4. hapus data
+
+0. keluar
+```
+
+### Menu 1 — Pesan Kamar
+
+Digunakan untuk membuat transaksi baru dan mengubah status kamar menjadi terisi.
+
+### Menu 2 — Checkout Kamar
+
+Digunakan untuk mengubah status kamar menjadi kosong berdasarkan kode unik transaksi.
+
+### Menu 3 — Cetak Laporan
+
+Digunakan untuk menampilkan seluruh transaksi yang tersimpan.
+
+### Menu 4 — Hapus Data
+
+Digunakan untuk menghapus transaksi berdasarkan kode unik.
+
+### Menu 0 — Keluar
+
+Mengakhiri program dan menjalankan:
+
+```cpp
+clear(head, tail);
+```
+
+untuk membersihkan seluruh node yang masih berada di memori.
+
+---
+
+# 🚀 How to Run
+
+## Prerequisites
+
+Program membutuhkan compiler C++ yang mendukung minimal **C++11**, seperti:
+
+* GCC
+* MinGW
 * Clang
-* Microsoft Visual C++
-* G++
+* MSVC
 
 ---
 
-### 1. Clone Repository
+## Compile
 
-```bash
-git clone https://github.com/username-kamu/hotel-room-management.git
+Jika file program bernama:
+
+```text
+main.cpp
 ```
 
-### 2. Masuk ke Directory
+gunakan:
 
 ```bash
-cd hotel-room-management
+g++ -std=c++11 main.cpp -o hotel
 ```
 
-### 3. Compile Program
+---
 
-Menggunakan GCC:
+## Run
 
-```bash
-g++ -std=c++11 src/main.cpp -o hotel
-```
-
-### 4. Run Program
-
-**Windows:**
+### Windows
 
 ```bash
 hotel.exe
 ```
 
-**Linux / macOS:**
+### Linux / macOS
 
 ```bash
 ./hotel
@@ -307,138 +655,74 @@ hotel.exe
 
 ---
 
-## 🖥️ Application Flow
+# 📁 Repository Structure
 
-Alur utama sistem:
-
-```text
-                ┌───────────────┐
-                │     START     │
-                └───────┬───────┘
-                        │
-                        ▼
-                ┌───────────────┐
-                │  Main Menu    │
-                └───────┬───────┘
-                        │
-        ┌───────────────┼────────────────┐
-        │               │                │
-        ▼               ▼                ▼
-   ┌─────────┐    ┌──────────┐    ┌─────────────┐
-   │ Check-In│    │ Check-Out│    │  History    │
-   └────┬────┘    └────┬─────┘    └──────┬──────┘
-        │              │                 │
-        ▼              ▼                 ▼
-  Check Room      Update Room       Display List
-  Availability       Status         Sorted Data
-        │
-        ▼
- Generate Transaction
-      Code
-        │
-        ▼
- Sorted Insertion
-        │
-        └──────────────┐
-                       ▼
-                 ┌───────────┐
-                 │ Main Menu │
-                 └───────────┘
-```
-
----
-
-## 🧠 Learning Objectives
-
-Proyek ini berfokus pada penerapan konsep fundamental **Data Structures & Algorithms**, khususnya:
-
-* Struct dalam C++.
-* Pointer dan pointer manipulation.
-* Dynamic memory allocation.
-* Dynamic memory deallocation.
-* Doubly Linked List.
-* Node traversal.
-* Insertion dan deletion.
-* Sorted insertion.
-* Searching.
-* Array-based state management.
-* Basic algorithmic complexity analysis.
-
----
-
-## 🛡️ Memory Management
-
-Karena linked list menggunakan dynamic allocation, setiap node yang dibuat menggunakan:
-
-```cpp
-new
-```
-
-harus dibersihkan menggunakan:
-
-```cpp
-delete
-```
-
-Program menyediakan mekanisme `clear()` untuk memastikan seluruh node dihapus ketika linked list tidak lagi digunakan.
-
-Contoh:
-
-```cpp
-void clear() {
-    Node* temp;
-
-    while (head != nullptr) {
-        temp = head;
-        head = head->next;
-        delete temp;
-    }
-
-    tail = nullptr;
-}
-```
-
-Pendekatan ini membantu mencegah **memory leak** selama program berjalan.
-
----
-
-## 📚 Concepts Demonstrated
-
-Proyek ini mendemonstrasikan hubungan antara struktur data dan kebutuhan aplikasi sederhana:
+Untuk versi sederhana:
 
 ```text
-Hotel Management
-       │
-       ├── Room Availability
-       │       └── Array
-       │
-       ├── Transaction Storage
-       │       └── Doubly Linked List
-       │
-       ├── Transaction Ordering
-       │       └── Sorted Insertion
-       │
-       └── Memory Management
-               └── new / delete
+hotel-room-management/
+│
+├── main.cpp
+├── README.md
+└── .gitignore
 ```
 
 ---
 
-## 🔮 Future Improvements
+# 🎯 Learning Objectives
 
-Beberapa pengembangan yang dapat ditambahkan:
+Project ini dibuat untuk menerapkan konsep **Data Structures and Algorithms** menggunakan C++.
 
-* [ ] Sistem login administrator.
-* [ ] Penyimpanan data menggunakan file/database.
-* [ ] Sistem harga kamar dan perhitungan total biaya.
-* [ ] Tanggal check-in dan check-out.
-* [ ] Pencarian transaksi berdasarkan nama pelanggan.
-* [ ] Filtering berdasarkan nomor kamar.
-* [ ] Statistik okupansi kamar.
-* [ ] Export laporan ke `.txt` atau `.csv`.
-* [ ] Implementasi error handling yang lebih komprehensif.
-* [ ] Pemisahan kode menjadi beberapa `.hpp` dan `.cpp`.
-* [ ] Unit testing untuk fungsi linked list.
+Konsep yang digunakan meliputi:
+
+* `struct`
+* Pointer
+* Reference
+* Doubly Linked List
+* Node traversal
+* Sorted insertion
+* Searching
+* Node deletion
+* Dynamic memory allocation
+* Dynamic memory deallocation
+* Array
+* Conditional statements
+* Looping
+* Function
+* Basic time complexity
+
+---
+
+# ⚠️ Current Limitations
+
+Program saat ini masih merupakan aplikasi berbasis CLI sederhana dan memiliki beberapa batasan:
+
+* Jumlah kamar ditetapkan sebanyak **5 kamar**.
+* Nama pelanggan dibaca menggunakan `cin >>`, sehingga input nama dengan spasi belum didukung.
+* Data transaksi hanya disimpan selama program berjalan.
+* Belum menggunakan database atau file sebagai persistent storage.
+* Belum terdapat autentikasi administrator.
+* Belum terdapat sistem pembayaran atau perhitungan biaya kamar.
+* Belum terdapat tanggal check-in dan check-out.
+* `total_pelanggan` digunakan sebagai penghitung ID selama program berjalan dan tidak disimpan secara permanen.
+
+---
+
+# 🔮 Future Development
+
+Beberapa pengembangan yang dapat dilakukan:
+
+* [ ] Menambahkan penyimpanan data menggunakan file.
+* [ ] Menggunakan database untuk persistent storage.
+* [ ] Mendukung nama lengkap dengan `getline()`.
+* [ ] Menambahkan harga kamar.
+* [ ] Menambahkan total biaya berdasarkan lama menginap.
+* [ ] Menambahkan tanggal check-in dan check-out.
+* [ ] Menambahkan sistem login administrator.
+* [ ] Menambahkan fitur pencarian berdasarkan nama pelanggan.
+* [ ] Menambahkan fitur statistik penggunaan kamar.
+* [ ] Memisahkan program menjadi beberapa file `.hpp` dan `.cpp`.
+* [ ] Menambahkan validasi input yang lebih lengkap.
 
 ---
 
